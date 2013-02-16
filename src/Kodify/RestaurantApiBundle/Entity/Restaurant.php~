@@ -265,4 +265,50 @@ class Restaurant
     {
         return $this->price;
     }
+
+    /**
+     * Set website
+     *
+     * @param string $website
+     * @return Restaurant
+     */
+    public function setWebsite($website)
+    {
+        $this->website = $website;
+    
+        return $this;
+    }
+
+    /**
+     * Get website
+     *
+     * @return string 
+     */
+    public function getWebsite()
+    {
+        return $this->website;
+    }
+
+    /**
+     * Set googlePlacesId
+     *
+     * @param string $googlePlacesId
+     * @return Restaurant
+     */
+    public function setGooglePlacesId($googlePlacesId)
+    {
+        $this->googlePlacesId = $googlePlacesId;
+    
+        return $this;
+    }
+
+    /**
+     * Get googlePlacesId
+     *
+     * @return string 
+     */
+    public function getGooglePlacesId()
+    {
+        return $this->googlePlacesId;
+    }
 }
