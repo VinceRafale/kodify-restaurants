@@ -23,7 +23,7 @@
         var geocoder = new google.maps.Geocoder();
 
         var functionResponse = jQuery.ajax({
-            url: '/tag/',
+            url: '/web/tag/',
             type: 'GET',
             dataType: 'json',
             cache: true,
@@ -36,7 +36,7 @@
             $('#map_canvas').gmap({'center': defaultCenter.center, 'zoom': defaultCenter.zoom, 'disableDefaultUI':true});
 
             $('#map_canvas').gmap().bind('init', function(event, map) {
-                $.getJSON( '/restaurant/', function(data) {
+                $.getJSON( '/web/restaurant/', function(data) {
 
                     $.each(data, function(i, marker) {
 
