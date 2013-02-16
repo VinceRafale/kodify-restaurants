@@ -182,10 +182,7 @@ $(document).ready(function() {
                     text: response.text
                 });
 
-				$(document).find('form')[0].reset();  
-
                 console.log(response);
-
 
                 createMarker(response.restaurant);
 
@@ -210,7 +207,7 @@ $(document).ready(function() {
     });
 
     $('#addNewRestaurantDialog').live('pagehide',function(event) {
-        $(document).find('form')[0].reset();     
+        $("#addNewRestaurantDialog").find('form')[0].reset();    
     });
 });
 
