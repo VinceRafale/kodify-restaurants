@@ -3,6 +3,7 @@ RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^css(.*)$ web/css/$1 [L]
 RewriteRule ^images(.*)$ web/images/$1 [L]
+RewriteRule ^img(.*)$ web/img/$1 [L]
 RewriteRule ^js(.*)$ web/js/$1 [L]
-RewriteRule ^(.*)$ index.html [QSA,L]
+RewriteRule ^(.*)$ web/index.html [QSA,L]
 </IfModule>
