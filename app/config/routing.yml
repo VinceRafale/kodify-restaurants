@@ -1,0 +1,5 @@
+KodifyAdminBundle:
+    resource: "@KodifyRestaurantApiBundle/Controller/"
+    type:     annotation
+    prefix:   /
+    
