@@ -50,6 +50,7 @@ class RestaurantController extends FOSRestController
         $lon = $request->get('lon');
         $price = $request->get('price');
         $description = $request->get('description');
+        $website = $request->get('website');
         $tags = $request->get('tag');
 
         $rest = new Restaurant();
@@ -58,18 +59,20 @@ class RestaurantController extends FOSRestController
         $rest->setLat($lat);
         $rest->setLon($lon);
         $rest->setDescription($description);
+        $rest->setWebsite($website);
 
-        foreach ($tags as $t) {
-            $tag = $em->getRepository('KodifyRestaurantApiBundle:Tag')->findOneByName($t);
-            if (!$tag instanceof Tag) {
-                $tag = new Tag();
-                $tag->setName($t);
-                $em->persist($tag);
-            }
+        if (is_array($tags)) {
+            foreach ($tags as $t) {
+                $tag = $em->getRepository('KodifyRestaurantApiBundle:Tag')->findOneById($t);
+                if (!$tag instanceof Tag) {
+                    $tag = new Tag();
+                    $tag->setName($t);
+                    $em->persist($tag);
+                }
 
-            $rest->addTag($tag);
-        }
-        
+                $rest->addTag($tag);
+            }      
+        }  
 
         $em = $this->getDoctrine()->getManager();
         $em->persist($rest);
@@ -78,7 +81,13 @@ class RestaurantController extends FOSRestController
         $view = View::create();
         $handler = $this->get('fos_rest.view_handler');
         $view->setFormat('json');
-        $view->setData(array('text' => 'Restaurant added to database', 'title' => 'Sucess!!!'));
+        $view->setData(
+            array(
+                'text' => 'Restaurant added to database',
+                'title' => 'Sucess!!!',
+                'restaurant' => $rest
+            )
+        );
 
         return $handler->handle($view);
     }

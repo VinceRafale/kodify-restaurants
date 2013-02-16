@@ -19,8 +19,8 @@ class TagController extends FOSRestController
         $view = View::create();
         $handler = $this->get('fos_rest.view_handler');
 
-        $tags = array('asiatico', 'economico', 'de mercado');
-
+        $em = $this->getDoctrine()->getManager();
+        $tags = $em->getRepository('KodifyRestaurantApiBundle:Tag')->findAll();
         $view->setFormat('json');
         $view->setData($tags);
 
