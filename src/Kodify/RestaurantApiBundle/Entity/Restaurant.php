@@ -67,6 +67,14 @@ class Restaurant
      * @ORM\ManyToMany(targetEntity="Tag")
      */
     private $tags;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="User")
+     */
+    protected $user;
+
+    protected $currentUserOwner;
+
     /**
      * Constructor
      */
@@ -310,5 +318,40 @@ class Restaurant
     public function getGooglePlacesId()
     {
         return $this->googlePlacesId;
+    }
+
+    /**
+     * Set user
+     *
+     * @param \Kodify\RestaurantApiBundle\Entity\User $user
+     * @return Restaurant
+     */
+    public function setUser(\Kodify\RestaurantApiBundle\Entity\User $user = null)
+    {
+        $this->user = $user;
+    
+        return $this;
+    }
+
+    /**
+     * Get user
+     *
+     * @return \Kodify\RestaurantApiBundle\Entity\User 
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public function setCurrentUserOwner($currentUserOwner)
+    {
+        $this->currentUserOwner = $currentUserOwner;
+
+        return $this;
+    }
+
+    public function getCurrentUserOwner()
+    {
+        return $currentUserOwner;
     }
 }

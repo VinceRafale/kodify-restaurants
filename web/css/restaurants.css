@@ -29,3 +29,17 @@
     font-weight: normal;
     padding-top: 10px;
 }
+
+.markerAction {
+    margin-top :10px;
+    padding-top: 10px;
+    border-top: 1px solid #cecece;
+}
+
+.logedin-option {
+    display: none;
+}
+
+.gritter-notice-wrapper .error {
+    background: red;
+}

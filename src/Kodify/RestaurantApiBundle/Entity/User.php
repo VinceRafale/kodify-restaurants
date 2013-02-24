@@ -13,6 +13,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Entity(repositoryClass="Kodify\RestaurantApiBundle\Repository\UserRepository")
  * @ORM\Table(name="User")
+ * @UniqueEntity(fields="username", message="This username is already in use")
+ * @UniqueEntity(fields="email", message="This email is already in use")
+ * @ORM\HasLifecycleCallbacks()
  */
 class User implements UserInterface, AdvancedUserInterface
 {
@@ -26,20 +29,32 @@ class User implements UserInterface, AdvancedUserInterface
     /**
      * @ORM\Column(type="string", length=25, unique=true)
      * @Assert\NotBlank()
-     * @Assert\MinLength(limit=3)
+     * @Assert\MinLength(limit=5)
      * @Assert\Regex(pattern="/^[A-Za-z0-9-_]+$/", message="Username cannot contain special chars (just - or _)")
      */
     private $username;
 
     /**
-     * @ORM\Column(type="string", length=1000, nullable=true)
+     * @Assert\NotBlank()
+     * @ORM\Column(type="string", length=500)
      */
     protected $password = '';
+
+    /**
+     * @Assert\NotBlank()
+     * @ORM\Column(type="string", length=100, unique=true)
+     */
+    private $email;
 
     /**
      * @ORM\Column(type="string", length=32)
      */
     private $salt;
+
+    /**
+     * @ORM\Column(type="string", length=32)
+     */
+    private $token;
 
     public function __construct()
     {
@@ -156,6 +171,13 @@ class User implements UserInterface, AdvancedUserInterface
         return $this->salt;
     }
 
+    public function generateToken()
+    {
+        $this->setToken(md5(uniqid(null, true)));
+
+        return $this->token;
+    }
+
 
     /**
      * Get id
@@ -165,5 +187,51 @@ class User implements UserInterface, AdvancedUserInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set token
+     *
+     * @param string $token
+     * @return User
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    
+        return $this;
+    }
+
+    /**
+     * Get token
+     *
+     * @return string 
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     * @return User
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+    
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string 
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 }
