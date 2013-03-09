@@ -62,6 +62,27 @@ class Restaurant
      */
     protected $googlePlacesId = 0;
 
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    protected $rateFood = 0;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    protected $rateService = 0;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    protected $rateSpeed = 0;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $rateCounter = 0;
+
     /**
      *
      * @ORM\ManyToMany(targetEntity="Tag")
@@ -353,5 +374,97 @@ class Restaurant
     public function getCurrentUserOwner()
     {
         return $currentUserOwner;
+    }
+
+    /**
+     * Set rateFood
+     *
+     * @param float $rateFood
+     * @return Restaurant
+     */
+    public function setRateFood($rateFood)
+    {
+        $this->rateFood = $rateFood;
+    
+        return $this;
+    }
+
+    /**
+     * Get rateFood
+     *
+     * @return float 
+     */
+    public function getRateFood()
+    {
+        return $this->rateFood;
+    }
+
+    /**
+     * Set rateService
+     *
+     * @param float $rateService
+     * @return Restaurant
+     */
+    public function setRateService($rateService)
+    {
+        $this->rateService = $rateService;
+    
+        return $this;
+    }
+
+    /**
+     * Get rateService
+     *
+     * @return float 
+     */
+    public function getRateService()
+    {
+        return $this->rateService;
+    }
+
+    /**
+     * Set rateSpeed
+     *
+     * @param float $rateSpeed
+     * @return Restaurant
+     */
+    public function setRateSpeed($rateSpeed)
+    {
+        $this->rateSpeed = $rateSpeed;
+    
+        return $this;
+    }
+
+    /**
+     * Get rateSpeed
+     *
+     * @return float 
+     */
+    public function getRateSpeed()
+    {
+        return $this->rateSpeed;
+    }
+
+    /**
+     * Set rateCounter
+     *
+     * @param integer $rateCounter
+     * @return Restaurant
+     */
+    public function setRateCounter($rateCounter)
+    {
+        $this->rateCounter = $rateCounter;
+    
+        return $this;
+    }
+
+    /**
+     * Get rateCounter
+     *
+     * @return integer 
+     */
+    public function getRateCounter()
+    {
+        return $this->rateCounter;
     }
 }

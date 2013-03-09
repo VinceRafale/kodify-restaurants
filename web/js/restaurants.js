@@ -15,12 +15,44 @@ function createMarker(marker)
         markerContent += marker.description + '<br/>';
     }
 
-    if (marker.tags != undefined) {
+    if (marker.tags != undefined && marker.tags.length > 0) {
         markerContent += '<br /><b>Tags:</b> ' + '<br/>';
         for (i = 0; i < marker.tags.length; i++) {
             markerContent += marker.tags[i].name + ' - ';
         }
     }
+
+    markerContent += '<br /><b>Rating summary:</b> ' + '<br/>';
+    if (marker.rate_counter > 0) {
+        markerContent += '<table><tr><td>Food:</td><td>';
+        for (i = 0; i < (marker.rate_food / 2); i++) {
+            if ((marker.rate_food / 2) < i + 1) {
+                markerContent += '<img src="/images/ico/star_rating_half.png" alt="' + marker.rate_food + '">';
+            } else {
+                markerContent += '<img src="/images/ico/1361663720_keditbookmarks_16x16.png" alt="' + marker.rate_food + '">';
+            }
+        }
+        markerContent += '</td></tr><tr><td>';
+        markerContent += 'Service:</td><td>';
+        for (i = 0; i < (marker.rate_service / 2); i++) {
+            if ((marker.rate_service / 2) < i + 1) {
+                markerContent += '<img src="/images/ico/star_rating_half.png" alt="' + marker.rate_service + '">';
+            } else {
+                markerContent += '<img src="/images/ico/1361663720_keditbookmarks_16x16.png" alt="' + marker.rate_service + '">';
+            }
+        }
+        markerContent += '</td></tr><tr><td>';
+        markerContent += 'Speed:</td><td>';
+        for (i = 0; i < (marker.rate_speed / 2); i++) {
+            if ((marker.rate_speed / 2) < i + 1) {
+                markerContent += '<img src="/images/ico/star_rating_half.png" alt="' + marker.rate_speed + '">';
+            } else {
+                markerContent += '<img src="/images/ico/1361663720_keditbookmarks_16x16.png" alt="' + marker.rate_speed + '">';
+            }
+        }
+        markerContent += '</td></tr></table>';
+    }
+
     markerContent += '</div>';
     markerContent += '<div class="markerAction">'
     markerContent += '<a href="" data-marker-id="' + marker.id + '" class="marker-rate-action" title="Rate this restaurant"><img src="/images/ico/1361663720_keditbookmarks_16x16.png"></a> ';
@@ -49,6 +81,7 @@ function createMarker(marker)
         'restName' : marker.name.toLowerCase().replace(/ +/g,'_').replace(/[0-9]/g,'').replace(/[^a-z0-9-_]/g,'').trim()
     }).click(function() {
         markers[marker.id] = this;
+        window.location.hash = marker.id + '-' + this.restName;
         $('#map_canvas').gmap('openInfoWindow', { 'content': markerContent }, this);
         addthis.toolbox(".addthis_toolbox");
     }).dragend( function(event) {

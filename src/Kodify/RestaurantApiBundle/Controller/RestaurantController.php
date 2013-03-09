@@ -173,10 +173,16 @@ class RestaurantController extends FOSRestController
             $restaurantRate->setUser($user);
         }
 
+        $restaurant->setRateFood(($restaurant->getRateFood() * $restaurant->getRateCounter() + $restaurantRate->getFood()) / ($restaurant->getRateCounter() + 1));
+        $restaurant->setRateService(($restaurant->getRateService() * $restaurant->getRateCounter() + $restaurantRate->getService()) / ($restaurant->getRateCounter() + 1));
+        $restaurant->setRateSpeed(($restaurant->getRateSpeed() * $restaurant->getRateCounter() + $restaurantRate->getSpeed()) / ($restaurant->getRateCounter() + 1));
+        $restaurant->setRateCounter($restaurant->getRateCounter() + 1);
+
         $em->persist($restaurantRate);
+        $em->persist($restaurant);
         $em->flush();
 
-        $response = array('msg' => 'Thanks!!!');
+        $response = array('msg' => 'Thanks for your rate!!!');
         $view = View::create();
         $handler = $this->get('fos_rest.view_handler');
         $view->setFormat('json');
