@@ -3,7 +3,9 @@
 namespace Kodify\RestaurantApiBundle\Controller;
 
 use Kodify\RestaurantApiBundle\Entity\Restaurant;
+use Kodify\RestaurantApiBundle\Entity\RestaurantRate;
 use Kodify\RestaurantApiBundle\Entity\Tag;
+use Kodify\RestaurantApiBundle\Entity\User;
 
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\View\View;
@@ -17,7 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-use Kodify\RestaurantApiBundle\Entity\User;
+
+
 
 class RestaurantController extends FOSRestController
 {
@@ -134,6 +137,46 @@ class RestaurantController extends FOSRestController
         $em->remove($restaurant);
         $em->flush();
         $response = array('markerId' => $restaurantId);
+        $view = View::create();
+        $handler = $this->get('fos_rest.view_handler');
+        $view->setFormat('json');
+        $view->setData($response);
+
+        return $handler->handle($view);
+    }
+
+    /**
+     * @Route("/restaurant/{id}/rate/", name="remove_restaurant")
+     * @Method({"POST"})
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function rateRestaurantAction($id, Request $request)
+    {
+        $restaurantId = $id;
+        $user = null;
+
+        $user = $this->getUserFromToken();
+        $em = $this->getDoctrine()->getManager();
+        $restaurant = $em->getRepository('KodifyRestaurantApiBundle:Restaurant')->findOneById($restaurantId);
+
+        if (!$restaurant instanceof Restaurant) {
+            throw new NotFoundHttpException(); 
+        } 
+
+        $restaurantRate = new RestaurantRate();
+        $restaurantRate->setRestaurant($restaurant);
+        $restaurantRate->setFood($request->get('rate-food'));
+        $restaurantRate->setService($request->get('rate-service'));
+        $restaurantRate->setSpeed($request->get('rate-speed'));
+
+        if ($user instanceof User) {
+            $restaurantRate->setUser($user);
+        }
+
+        $em->persist($restaurantRate);
+        $em->flush();
+
+        $response = array('msg' => 'Thanks!!!');
         $view = View::create();
         $handler = $this->get('fos_rest.view_handler');
         $view->setFormat('json');

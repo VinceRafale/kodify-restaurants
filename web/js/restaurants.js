@@ -1,45 +1,56 @@
 if (!window.console) window.console = {};
 if (!window.console.log) window.console.log = function () { };
 
+markerDraggableIcon = '/images/ico/dark/24px/24_move.png';
+markerIcon = '/images/ico/32x32/row13/1.png';
+
 function createMarker(marker)
 {
-    $('#map_canvas').gmap('addMarker', {
+    var markerContent = '';
+
+    markerContent += marker.name; 
+    markerContent += '<div class="markerContent">';
+    markerContent += marker.address + '<br/>';
+    if (marker.description != undefined) {
+        markerContent += marker.description + '<br/>';
+    }
+
+    if (marker.tags != undefined) {
+        markerContent += '<br /><b>Tags:</b> ' + '<br/>';
+        for (i = 0; i < marker.tags.length; i++) {
+            markerContent += marker.tags[i].name + ' - ';
+        }
+    }
+    markerContent += '</div>';
+    markerContent += '<div class="markerAction">'
+    markerContent += '<a href="" data-marker-id="' + marker.id + '" class="marker-rate-action" title="Rate this restaurant"><img src="/images/ico/1361663720_keditbookmarks_16x16.png"></a> ';
+    
+
+    if (marker.current_user_owner != undefined && marker.current_user_owner == true) {            
+        markerContent += '<a href="" data-marker-id="' + marker.id + '" class="marker-move-action" title="move restaurant position"><img src="/images/ico/dark/16px/16_move.png"></a> ';
+        markerContent += '<a href="" data-marker-id="' + marker.id + '" class="marker-delete-action" title="delete this restaurant"><img src="/images/ico/16x16/row2/1.png"></a>';
+    }
+    markerContent += '</div>';
+
+    shareDescription = marker.name;// + '<br>' + marker.address + '<br>' + marker.description; 
+
+    markerContent += '<div class="markerAction">'
+    markerContent += '<div class="addthis_toolbox addthis_default_style" addthis:title="restaurant ' + marker.name + '" addthis:description="' + shareDescription + '">';
+    markerContent += '<a class="addthis_button_preferred_1"></a><a class="addthis_button_preferred_2"></a><a class="addthis_button_preferred_3"></a><a class="addthis_button_preferred_4"></a><a class="addthis_button_compact"></a><a class="addthis_counter addthis_bubble_style"></a>';
+    markerContent += '</div></div>';
+
+    createdMarker = $('#map_canvas').gmap('addMarker', {
         'position': new google.maps.LatLng(marker.lat, marker.lon),
         'bounds': true,
         'tags': marker.tags,
         'price': marker.price,
         'markerId': marker.id,
-        'icon': '/images/ico/32x32/row13/1.png'
+        'icon': markerIcon,
+        'restName' : marker.name.toLowerCase().replace(/ +/g,'_').replace(/[0-9]/g,'').replace(/[^a-z0-9-_]/g,'').trim()
     }).click(function() {
-        var markerContent = '';
-
-        markerContent += marker.name; 
-        markerContent += '<div class="markerContent">';
-        markerContent += marker.address + '<br/>';
-        if (marker.description != undefined) {
-            markerContent += marker.description + '<br/>';
-        }
-
-        if (marker.tags != undefined) {
-            markerContent += '<br /><b>Tags:</b> ' + '<br/>';
-            for (i = 0; i < marker.tags.length; i++) {
-                markerContent += marker.tags[i].name + ' - ';
-            }
-        }
-        markerContent += '</div>';
-        markerContent += '<div class="markerAction">'
-        markerContent += '<a href="" data-marker-id="' + marker.id + '" class="marker-rate-action" title="rate this restaurant"><img src="/images/ico/1361663720_keditbookmarks_16x16.png"></a> ';
-
-        if (marker.current_user_owner != undefined && marker.current_user_owner == true) {            
-            markerContent += '<a href="" data-marker-id="' + marker.id + '" class="marker-move-action" title="move restaurant position"><img src="/images/ico/dark/16px/16_move.png"></a> ';
-            markerContent += '<a href="" data-marker-id="' + marker.id + '" class="marker-delete-action" title="delete this restaurant"><img src="/images/ico/16x16/row2/1.png"></a>';
-        }
-
-        markerContent += '</div>';
-
-        //console.log(this);
         markers[marker.id] = this;
         $('#map_canvas').gmap('openInfoWindow', { 'content': markerContent }, this);
+        addthis.toolbox(".addthis_toolbox");
     }).dragend( function(event) {
 
         $.post(baseApiDomain + '/restaurant/' + this.markerId + '/?userToken=' + userToken, { lat: event.latLng.lat(), lon: event.latLng.lng() }, function (response) { 
@@ -48,9 +59,17 @@ function createMarker(marker)
             console.log(response);
 
             alert("Error: status " + response.status + " statusText: " + response.statusText);           
-        });;
+        });
     });
 
+     if (window.location.hash) {
+        currentHash = window.location.hash.replace('#','').split("-");
+        if (currentHash.length > 1 && currentHash[0] == marker.id) {
+           $('#map_canvas').gmap('openInfoWindow', { 'content': markerContent }, createdMarker);          
+           map.setCenter(createdMarker[0].position);
+           map.setZoom(18);
+        }
+    }
 }
 
 $(document).ready(function() {
@@ -69,10 +88,27 @@ $(document).ready(function() {
 
     $('#map_canvas').gmap({'center': defaultCenter.center, 'zoom': defaultCenter.zoom, 'disableDefaultUI':true});
 
-    $("body").delegate('.marker-move-action', 'click', function () {        
-       marker = markers[$(this).data('marker-id')];
-       marker.setDraggable(true);    
-       marker.setIcon('/images/ico/dark/24px/24_move.png')  
+
+
+    $("body").delegate('.marker-share-action', 'click', function () {
+        marker = markers[$(this).data('marker-id')];
+
+        
+
+        var restaurantURl = 'http://' + document.domain + '/#' + $(this).data('marker-id') + '-' + rname;
+        $("#popupShareRestaurant .address").html(restaurantURl);
+    });
+
+    $("body").delegate('.marker-move-action', 'click', function () {
+        marker = markers[$(this).data('marker-id')];
+
+        if (!marker.draggable) {
+            marker.setDraggable(true);    
+            marker.setIcon(markerDraggableIcon)  
+        } else {
+            marker.setDraggable(false);    
+            marker.setIcon(markerIcon)
+        }
     });
 
     $("body").delegate('.marker-delete-action', 'click', function () {
@@ -80,11 +116,34 @@ $(document).ready(function() {
         $("#deleteRestaurantDialog").popup('open');
     });
 
+    $("body").delegate('.marker-rate-action', 'click', function () {
+        $("#rateRestaurant").attr('action', baseApiDomain + '/restaurant/' + $(this).data('marker-id') + '/rate/?userToken=' + userToken);
+        $("#rateRestaurantDialog").popup('open');
+    });
+
     $('#deleteRestaurant').on('submit', function (e) {
         e.preventDefault();
         $.post($(this).attr('action'), $(this).serialize(), function (response) { 
              markers[response.markerId].setMap(null);
             $("#deleteRestaurantDialog").popup('close');    
+        }).fail(function(response) {
+            console.log(response);
+        });
+
+        return false;
+    });
+
+    $('#rateRestaurant').on('submit', function (e) {
+        e.preventDefault();
+        $.post($(this).attr('action'), $(this).serialize(), function (response) { 
+
+            if (response.msg != undefined) {
+                $.gritter.add({                    
+                    text: response.msg
+                });
+            }
+
+            $("#rateRestaurantDialog").popup('close');    
         }).fail(function(response) {
             console.log(response);
         });
@@ -104,7 +163,7 @@ $(document).ready(function() {
     $('#map_canvas').gmap().bind('init', function(event, map) {
     	window.map = map;
 
-        reloadMarkers();
+        reloadMarkers(true);
 
         var input = document.getElementById('restaurant_name');
         var autocomplete = new google.maps.places.Autocomplete(input, {'types' : ['establishment']});
@@ -144,7 +203,7 @@ $(document).ready(function() {
         });
 
         if ( filters.length > 0 ) {
-            $('#map_canvas').gmap('find', 'markers', { 'property': 'tags', 'value': filters, 'operator': 'OR' }, function(marker, found) {
+            $('#map_canvas').gmap('find', 'markers', { 'property': 'tags', 'value': filters, 'operator': 'OR'}, function(marker, found) {
 
                 if (found) {
                     $('#map_canvas').gmap('addBounds', marker.position);
@@ -191,7 +250,7 @@ $(document).ready(function() {
 */
     function findLocation(location, marker) {
         $('#map_canvas').gmap('search', {'location': location}, function(results, status) {
-            if ( status === 'OK' ) {
+            if (status === 'OK') {
                
                 $.each(results[0].address_components, function(i,v) {
                     if ( v.types[0] == "administrative_area_level_1" ||
@@ -236,8 +295,8 @@ $(document).ready(function() {
                 $("#popupRegister").popup('close'); 
 
                 $.cookie("userToken", response.token);
-
-
+                $('.logout-option').hide();
+                $('.logedin-option').show();
                 $.gritter.add({                    
                     text: response.msg
                 });
@@ -320,6 +379,7 @@ $(document).ready(function() {
                 map.setZoom(18);
 
                 $.mobile.changePage($('#home'), 'pop', false, true);
+                google.maps.event.trigger(map, 'resize');
             }).fail(function(response) { 
             	console.log(response);
             	alert("Error: status " + response.status + " statusText: " + response.statusText);
@@ -343,7 +403,7 @@ $(document).ready(function() {
 
 $.extend($.gritter.options, { time: 5000 });
 
-function reloadMarkers()
+function reloadMarkers(initialLoad)
 {
     $.getJSON(baseApiDomain + '/restaurant/?userToken=' + userToken, function(data) {
         markers.forEach(function(marker) {
@@ -354,5 +414,7 @@ function reloadMarkers()
         $.each(data, function(i, marker) {
             createMarker(marker);               
         });
+
+       
     });
 }

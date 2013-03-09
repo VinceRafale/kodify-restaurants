@@ -17,6 +17,9 @@
         <script src="/js/jquery.gritter.js"></script>
         <script src="/js/jquery.cookie.js"></script>
         <script src="/js/restaurants.js"></script>
+
+        <script type="text/javascript">var addthis_config = {"data_track_addressbar":false};</script>
+        <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-513b09be68d1c677"></script>
     </head>
 
     <script type="text/javascript">
@@ -68,6 +71,20 @@
                 </form>
             </div>
 
+            <div id="rateRestaurantDialog" data-role="popup" data-theme="a" data-overlay-theme="a">
+                <h3>Rate this restaurant</h3>              
+                <form id="rateRestaurant" method="POST">   
+                    <label for="rate-food">Food</label>
+                    <input type="range" name="rate-food" id="rate-food" data-highlight="true" data-mini="true" min="0" max="10" value="5">
+                    <label for="rate-service">Service</label>
+                    <input type="range" name="rate-service" id="rate-service" data-highlight="true" data-mini="true" min="0" max="10" value="5">
+                    <label for="rate-speed">Speed</label>
+                    <input type="range" name="rate-speed" id="rate-speed" data-highlight="true" data-mini="true" min="0" max="10" value="5">
+
+                    <button type="submit" data-theme="b">Submit</button>                                        
+                </form>
+            </div>
+
             <div id="optionsDialog" data-role="popup">
                 <ul data-role="listview" data-inset="true" style="min-width:210px;" data-theme="b">                    
                     <li class="logout-option">                        
@@ -97,6 +114,13 @@
                         <div id="login_error_messages" class="tooltip" style="display: none; color: red"></div>
                     </div>
                 </form>
+            </div>
+
+            <div data-role="popup" id="popupShareRestaurant">
+                <p>
+                    <strong>Send next url to your friend:</strong><br />
+                    <span class="address"></span>
+                </p>
             </div>
 
             <div data-role="popup" id="popupRegister" data-theme="a" class="ui-corner-all">
